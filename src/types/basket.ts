@@ -11,4 +11,5 @@ export interface IBasket {
     add(item: ICartItem): void;
     remove(id: string): void;
     clear(): void;
+    getItems(): ICartItem[];
 }

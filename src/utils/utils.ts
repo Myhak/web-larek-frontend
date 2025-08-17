@@ -25,21 +25,19 @@ export function ensureAllElements<T extends HTMLElement>(selectorElement: Select
     throw new Error(`Unknown selector element`);
 }
 
-export type SelectorElement<T> = T | string;
-
-export function ensureElement<T extends HTMLElement>(selectorElement: SelectorElement<T>, context?: HTMLElement): T {
-    if (isSelector(selectorElement)) {
-        const elements = ensureAllElements<T>(selectorElement, context);
+export function ensureElement<T extends HTMLElement>(selector: string | T, context?: HTMLElement): T {
+    if (typeof selector === 'string') {
+        const elements = context ? context.querySelectorAll(selector) : document.querySelectorAll(selector);
         if (elements.length > 1) {
-            console.warn(`selector ${selectorElement} return more then one element`);
+            console.warn(`selector ${selector} return more then one element`);
         }
         if (elements.length === 0) {
-            throw new Error(`selector ${selectorElement} return nothing`);
+            throw new Error(`selector ${selector} return nothing`);
         }
-        return elements.pop() as T;
+        return elements[0] as T;
     }
-    if (selectorElement instanceof HTMLElement) {
-        return selectorElement as T;
+    if (selector instanceof HTMLElement) {
+        return selector as T;
     }
     throw new Error('Unknown selector element');
 }

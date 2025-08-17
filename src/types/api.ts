@@ -6,8 +6,3 @@ export interface IApi {
     getProduct(id: string): Promise<IProduct>;
     orderProducts(order: IOrder): Promise<IOrderResult>;
 }
-
-export type ApiListResponse<T> = {
-    total: number;
-    items: T[];
-};

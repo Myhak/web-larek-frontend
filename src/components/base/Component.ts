@@ -1,9 +1,4 @@
 import { EventEmitter } from './events';
-import { ensureElement } from '../../utils/utils';
-
-interface IComponent {
-    render(data?: object): HTMLElement;
-}
 
 export abstract class Component<T> {
     protected container: HTMLElement;
@@ -27,41 +22,41 @@ export abstract class Component<T> {
     }
 
     protected setText(element: HTMLElement, text: string) {
-        if (element) {
-            element.textContent = text;
-        }
+        element && (element.textContent = text);
     }
 
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
         if (element) {
             element.src = src;
-            if (alt) {
-                element.alt = alt;
-            }
+            if (alt) element.alt = alt;
         }
     }
 
     protected setDisabled(element: HTMLElement, state: boolean) {
-        if (element) {
-            if (state) element.setAttribute('disabled', 'disabled');
-            else element.removeAttribute('disabled');
-        }
+        if (!element) return;
+        state ? element.setAttribute('disabled', 'disabled') : element.removeAttribute('disabled');
     }
 
     protected setHidden(element: HTMLElement) {
-        if (element) {
-            element.style.display = 'none';
-        }
+        if (element) element.style.display = 'none';
     }
 
     protected setVisible(element: HTMLElement) {
-        if (element) {
-            element.style.removeProperty('display');
-        }
+        if (element) element.style.removeProperty('display');
     }
 
-    protected render(data?: Partial<T>): HTMLElement {
-        Object.assign(this as object, data || {});
+    /**
+     * Обновляет свойства компонента на основе переданных данных
+     */
+    render(data?: Partial<T>): HTMLElement {
+        if (data) {
+            Object.keys(data).forEach(key => {
+                if (key in this) {
+                    // @ts-ignore — безопасно, потому что ключ проверен
+                    (this as any)[key] = (data as any)[key];
+                }
+            });
+        }
         return this.container;
     }
 }

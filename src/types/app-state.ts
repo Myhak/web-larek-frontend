@@ -1,11 +1,11 @@
 import { IProduct } from './product';
 import { IBasket } from './basket';
-import { IOrderForm } from './order';
+import { IOrder, IOrderData } from './order';
 
 export interface IAppState {
     catalog: IProduct[];
     basket: IBasket;
-    order: IOrderForm;
+    order: IOrderData;
     preview: IProduct | null;
     
     setCatalog(products: IProduct[]): void;
@@ -13,7 +13,7 @@ export interface IAppState {
     addToBasket(product: IProduct): void;
     removeFromBasket(productId: string): void;
     clearBasket(): void;
-    setOrderField<T extends keyof IOrderForm>(field: T, value: IOrderForm[T]): void;
+    setOrderField<T extends keyof IOrderData>(field: T, value: IOrderData[T]): void;
     validateOrder(): boolean;
-    getOrderData(): IOrderForm;
+    getOrderData(): IOrder;
 }

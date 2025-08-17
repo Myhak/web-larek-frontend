@@ -1,17 +1,19 @@
-export interface IOrderForm {
-    payment: string | null;
+import { PaymentMethod } from './common';
+
+export interface IOrderData {
+    payment: PaymentMethod | null;
     address: string;
     email: string;
     phone: string;
-    total: number;
-    items: string[];
-    isValid: boolean;
-    validateField(field: keyof Omit<IOrderForm, 'isValid' | 'total' | 'items'>): boolean;
-    validate(): boolean;
 }
 
-export interface IOrder extends IOrderForm {
-    id: string;
+export interface IOrder {
+    payment: PaymentMethod;
+    address: string;
+    email: string;
+    phone: string;
+    items: string[];    // id товаров из корзины
+    total: number;      // сумма из корзины
 }
 
 export interface IOrderResult {

@@ -49,11 +49,12 @@ npm run build
 yarn build
 ```
 
+
 ## Архитектура проекта
 
 ### Используемый паттерн
 Проект реализован с использованием архитектурного паттерна MVP (Model-View-Presenter):
-- **Model** - классы данных (AppState, Product, Basket, OrderForm)
+- **Model** - классы данных (AppState)
 - **View** - компоненты отображения (Page, Card, Basket, Order, Contacts)
 - **Presenter** - логика взаимодействия между Model и View через события
 
@@ -78,24 +79,62 @@ yarn build
 
 #### Модели данных
 
-1. **AppState** (`src/components/AppState.ts`)
-   - Основная модель состояния приложения
-   - Хранит каталог товаров, корзину, форму заказа
-   - Реализует бизнес-логику приложения
-   - Управляет взаимодействием между различными частями данных
+**AppState** (`src/components/AppState.ts`)
+- Основная модель состояния приложения
+- Хранит каталог товаров, корзину, данные заказа
+- Реализует бизнес-логику приложения
 
-2. **Product** (`src/components/Product.ts`)
-   - Модель товара
-   - Представляет информацию о товаре
+Поля:
+- `catalog: IProduct[]` - каталог товаров
+- `basket: IBasket` - состояние корзины
+- `order: IOrderData` - данные заказа (доставка, контакты)
+- `preview: IProduct | null` - текущий просматриваемый товар
 
-3. **Basket** (`src/components/BasketModel.ts`)
-   - Модель корзины
-   - Управляет добавлением/удалением товаров
-   - Рассчитывает общую сумму
+Методы:
+- `setCatalog(products: IProduct[]): void` - устанавливает каталог товаров
+- `setPreview(product: IProduct): void` - устанавливает просматриваемый товар
+- `addToBasket(product: IProduct): void` - добавляет товар в корзину
+- `removeFromBasket(productId: string): void` - удаляет товар из корзины
+- `clearBasket(): void` - очищает корзину
+- `setOrderField<T>(field: T, value: IOrderData[T]): void` - устанавливает поле данных заказа
+- `validateOrder(): boolean` - валидирует данные заказа
+- `getOrderData(): IOrder` - собирает готовый объект заказа для отправки на сервер
 
-4. **OrderForm** (`src/components/OrderForm.ts`)
-   - Модель формы заказа
-   - Управляет данными формы и их валидацией
+**IBasket**
+- Модель корзины
+- Хранит список товаров и общую сумму
+
+Поля:
+- `items: ICartItem[]` - элементы корзины
+- `total: number` - общая сумма
+
+Методы:
+- `add(item: ICartItem): void` - добавляет товар
+- `remove(id: string): void` - удаляет товар
+- `clear(): void` - очищает корзину
+- `getItems(): ICartItem[]` - возвращает элементы корзины
+
+**IOrderData**
+- Данные для формы заказа
+- Содержит только информацию о доставке и контактах
+
+Поля:
+- `payment: PaymentMethod | null` - способ оплаты
+- `address: string` - адрес доставки
+- `email: string` - email покупателя
+- `phone: string` - телефон покупателя
+
+**IOrder**
+- Готовый объект заказа для отправки на сервер
+- Собирается из данных корзины и формы заказа
+
+Поля:
+- `payment: PaymentMethod` - способ оплаты
+- `address: string` - адрес доставки
+- `email: string` - email покупателя
+- `phone: string` - телефон покупателя
+- `items: string[]` - идентификаторы товаров из корзины
+- `total: number` - общая сумма из корзины
 
 #### Компоненты отображения
 
@@ -128,7 +167,7 @@ yarn build
 
 Методы:
 - `get(uri: string): Promise<any>` - выполняет GET запрос
-- `post(uri: string, data: object, method?: 'POST'|'PUT'|'DELETE'): Promise<any>` - выполняет POST запрос
+- `post(uri: string,  object, method?: 'POST'|'PUT'|'DELETE'): Promise<any>` - выполняет POST запрос
 
 **Component<T>**
 Поля:
@@ -231,51 +270,6 @@ yarn build
 - `open()` - открывает модальное окно
 - `close()` - закрывает модальное окно
 - `set onClose(callback: Function)` - устанавливает обработчик закрытия
-
-#### Модели данных
-
-**AppState**
-Поля:
-- `catalog: IProduct[]` - каталог товаров
-- `basket: IBasket` - корзина
-- `order: IOrderForm` - форма заказа
-- `preview: IProduct | null` - текущий просматриваемый товар
-
-Методы:
-- `setCatalog(products: IProduct[]): void` - устанавливает каталог товаров
-- `setPreview(product: IProduct): void` - устанавливает просматриваемый товар
-- `addToBasket(product: IProduct): void` - добавляет товар в корзину
-- `removeFromBasket(productId: string): void` - удаляет товар из корзины
-- `clearBasket(): void` - очищает корзину
-- `setOrderField<T>(field: T, value: IOrderForm[T]): void` - устанавливает поле формы заказа
-- `validateOrder(): boolean` - валидирует форму заказа
-- `getOrderData(): IOrderForm` - возвращает данные заказа
-
-**BasketModel**
-Поля:
-- `items: ICartItem[]` - элементы корзины
-- `total: number` - общая сумма
-
-Методы:
-- `add(item: ICartItem): void` - добавляет товар
-- `remove(id: string): void` - удаляет товар
-- `clear(): void` - очищает корзину
-- `getItems(): ICartItem[]` - возвращает элементы корзины
-
-**OrderForm**
-Поля:
-- `payment: PaymentMethod | null` - способ оплаты
-- `address: string` - адрес доставки
-- `email: string` - email
-- `phone: string` - телефон
-- `total: number` - общая сумма
-- `items: string[]` - идентификаторы товаров
-- `isValid: boolean` - валидность формы
-
-Методы:
-- `validateField(field: string): boolean` - валидирует конкретное поле
-- `validate(): boolean` - валидирует всю форму
-- `reset(): void` - сбрасывает форму
 
 ### Пользовательские события
 
