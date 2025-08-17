@@ -35,6 +35,17 @@ const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
+// Инициализация приложения
+api.getProductList()
+    .then(products => {
+        appState.setCatalog(products);
+    })
+    .catch(error => {
+        console.error('Ошибка загрузки каталога товаров:', error);
+        // Показать сообщение пользователю
+        alert('Не удалось загрузить каталог товаров. Пожалуйста, проверьте подключение к интернету и попробуйте позже.');
+    });
+
 // Изменения данных
 events.on('items:changed', () => {
     page.catalog = appState.catalog.map(item => {
@@ -153,7 +164,8 @@ events.on('contacts:submit', () => {
             modal.render({ content: success.render() });
         })
         .catch(error => {
-            console.error(error);
+            console.error('Ошибка оформления заказа:', error);
+            alert('Ошибка при оформлении заказа. Пожалуйста, попробуйте позже.');
         });
 });
 
@@ -165,12 +177,3 @@ events.on('modal:open', () => {
 events.on('modal:close', () => {
     page.locked = false;
 });
-
-// Инициализация приложения
-api.getProductList()
-    .then(products => {
-        appState.setCatalog(products);
-    })
-    .catch(error => {
-        console.error('Ошибка загрузки каталога товаров:', error);
-    });
